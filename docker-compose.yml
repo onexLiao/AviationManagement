@@ -1,0 +1,8 @@
+version: '2'
+
+services:
+  aviationmanagement:
+    image: aviationmanagement
+    build:
+      context: ./AviationManagement
+      dockerfile: Dockerfile
