@@ -4,5 +4,15 @@ services:
   aviationmanagement:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+      - DB_PASSWORD=sdfewlrcxiv
+      - DB_DATABASE=flight
     ports:
       - "80"
+
+  db:
+    image: daocloud.io/library/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=sdfewlrcxiv
+      - MYSQL_DATABASE=flight
+    volumes:
+      - ./data/db:/var/lib/mysql

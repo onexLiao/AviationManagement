@@ -6,7 +6,9 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using AviationManagement.Models;
 
 namespace AviationManagement
 {
@@ -27,12 +29,19 @@ namespace AviationManagement
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // inject db
+            var connectionString = Configuration.GetConnectionString("MyConnection");
+            var dbName = Environment.GetEnvironmentVariable("DB_DATABASE");
+            var dbPasswd = Environment.GetEnvironmentVariable("DB_PASSWORD");
+            var connection = String.Format(connectionString, dbPasswd, dbName);
+            // Add framework services.
+            services.AddDbContext<WebAPIDbContext>(con => con.UseMySql(connection));
             // Add framework services.
             services.AddMvc();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, WebAPIDbContext context)
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
@@ -55,6 +64,8 @@ namespace AviationManagement
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+
+            DbInitializer.Initialize(context);
         }
     }
 }
