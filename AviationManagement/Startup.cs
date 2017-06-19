@@ -9,6 +9,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using AviationManagement.Models;
+using AviationManagement.Models.Manager;
+using Microsoft.Extensions.Caching.Redis;
+using Microsoft.AspNetCore.Session;
 
 namespace AviationManagement
 {
@@ -34,8 +37,17 @@ namespace AviationManagement
             var dbName = Environment.GetEnvironmentVariable("DB_DATABASE");
             var dbPasswd = Environment.GetEnvironmentVariable("DB_PASSWORD");
             var connection = String.Format(connectionString, dbPasswd, dbName);
-            // Add framework services.
             services.AddDbContext<WebAPIDbContext>(con => con.UseMySql(connection));
+
+            // inject cache
+            services.AddDistributedRedisCache(options => 
+            {
+                options.InstanceName = "Flight";
+                options.Configuration = "redis";
+            });
+
+            services.AddTransient<ITokenManager, RedisTokenManager>();
+
             // Add framework services.
             services.AddMvc();
         }
@@ -57,7 +69,6 @@ namespace AviationManagement
             }
 
             app.UseStaticFiles();
-
             app.UseMvc(routes =>
             {
                 routes.MapRoute(

@@ -11,9 +11,6 @@ namespace AviationManagement.Models
     {
         public Guid CustomerID { get; set; }
 
-        public Guid CustomerAlthorithmID { get; set; }
-      //  public CustomerAlthorithm CustomerAlthorithm { get; set; }
-
         public string EMail { get; set; }
 
         public string Sex { get; set; }

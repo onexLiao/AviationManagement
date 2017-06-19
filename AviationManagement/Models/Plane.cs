@@ -11,16 +11,6 @@ namespace AviationManagement.Models
         /// 飞机码
         /// </summary>
         public string PlaneID { get; set; }
-        ///// <summary>
-        ///// 一共有
-        ///// </summary>
-        //public int TotalSeats
-        //{
-        //    get
-        //    {
-        //        return VipSeats + BussinessSeats + EconomySeats;
-        //    }
-        //}
         /// <summary>
         /// 有几行
         /// </summary>

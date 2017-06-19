@@ -10,9 +10,12 @@ services:
       - "80"
 
   db:
-    image: daocloud.io/library/mysql
-    environment:
+   image: mysql:utf8
+   environment:
       - MYSQL_ROOT_PASSWORD=sdfewlrcxiv
       - MYSQL_DATABASE=flight
-    volumes:
-      - ./data/db:/var/lib/mysql
+   volumes:
+      - ./db/data/:/var/lib/mysql
+
+  redis:
+    image: redis

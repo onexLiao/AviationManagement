@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using AviationManagement.Models;
 
 namespace AviationManagement.Models
 {
@@ -46,5 +47,7 @@ namespace AviationManagement.Models
 
             base.OnModelCreating(builder);
         }
+
+        public DbSet<AviationManagement.Models.Ticket> Ticket { get; set; }
     }
 }
