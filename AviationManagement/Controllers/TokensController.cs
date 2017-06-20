@@ -56,7 +56,7 @@ namespace AviationManagement.Controllers
             // pass auth
             var token = await _tokenManager.CreateToken(cust.ID.ToString());
 
-            return CreatedAtAction("GetTicket", new { token = token.TokenString }, token);
+            return CreatedAtAction("GetToken", new { token = token.TokenString }, token);
         }
 
         /// <summary>

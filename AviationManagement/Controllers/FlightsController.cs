@@ -28,14 +28,7 @@ namespace AviationManagement.Controllers
         [HttpGet]
         public IEnumerable<Flight> GetFlights()
         {
-            var flights = _context.Flights.ToList();
-            flights.ForEach(f =>
-            {
-                _context.Entry(f)
-                .Collection(flight => flight.Tickets)
-                .Load();
-            });
-            return flights;
+            return _context.Flights;
         }
 
         // GET: api/Flights/5
@@ -54,11 +47,30 @@ namespace AviationManagement.Controllers
                 return NotFound();
             }
 
+            return Ok(flight);
+        }
+
+        // GET: api/Flights/5/Tickets
+        [HttpGet("{id}/Tickets")]
+        public async Task<IActionResult> GetFlightTickets([FromRoute] Guid id)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var flight = await _context.Flights.SingleOrDefaultAsync(m => m.FligtID == id);
+
+            if (flight == null)
+            {
+                return NotFound();
+            }
+
             _context.Entry(flight)
                 .Collection(f => f.Tickets)
                 .Load();
 
-            return Ok(flight);
+            return Ok(new { Tickets = flight.Tickets });
         }
 
         // PUT: api/Flights/5

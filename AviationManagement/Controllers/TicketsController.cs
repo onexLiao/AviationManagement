@@ -25,22 +25,22 @@ namespace AviationManagement.Controllers
         }
 
         // GET: api/Tickets
-        [HttpGet]
-        public IEnumerable<Ticket> GetTicket()
-        {
-            return _context.Ticket;
-        }
+        //[HttpGet]
+        //public IEnumerable<Ticket> GetTicket()
+        //{
+        //    return _context.Ticket;
+        //}
 
         // GET: api/Tickets/5
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetTicket([FromRoute] Guid id, string userId, string token)
+        public async Task<IActionResult> GetTicket([FromRoute] Guid id, string token)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            if (!await _tokenManager.CheckToken(new Token(userId, token)))
+            if (!await _tokenManager.CheckToken(new Token(id.ToString(), token)))
             {
                 return BadRequest("please login.");
             }
@@ -115,14 +115,14 @@ namespace AviationManagement.Controllers
 
         // DELETE: api/Tickets/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteTicket([FromRoute] Guid id, string userId, string token)
+        public async Task<IActionResult> DeleteTicket([FromRoute] Guid id, string token)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            if (!await _tokenManager.CheckToken(new Token(userId, token)))
+            if (!await _tokenManager.CheckToken(new Token(id.ToString(), token)))
             {
                 return BadRequest("please login.");
             }
@@ -131,14 +131,6 @@ namespace AviationManagement.Controllers
             if (ticket == null)
             {
                 return NotFound();
-            }
-
-            _context.Entry(ticket).Reference(t => t.Customer).Load();
-
-            // 判断 ticket 是否属于该用户
-            if (ticket.Customer.CustomerProfileID.ToString() != userId)
-            {
-                return BadRequest("Not your Ticket");
             }
 
             _context.Ticket.Remove(ticket);

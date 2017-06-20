@@ -16,28 +16,25 @@ namespace AviationManagement.Controllers
     {
         private readonly WebAPIDbContext _context;
 
+        private readonly ITokenManager _tokenManager;
+
         public CustomerProfilesController(WebAPIDbContext context, ITokenManager tokenManager)
         {
             _context = context;
         }
 
-        // GET: api/CustomerProfiles
-        [HttpGet]
-        public IEnumerable<CustomerProfile> GetCustomers()
-        {
-            // return BadRequest("Invailed verb.");
-            return _context.CustomerProfiles;
-        }
-
         // GET: api/CustomerProfiles/5
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetCustomer([FromRoute] Guid id)
+        public async Task<IActionResult> GetCustomer([FromRoute] Guid id, string token)
         {
-            // return BadRequest("Invailed verb.");
-
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
+            }
+
+            if (!await _tokenManager.CheckToken(new Token(id.ToString(), token)))
+            {
+                return BadRequest();
             }
 
             var customer = await _context.CustomerProfiles.SingleOrDefaultAsync(m => m.CustomerProfileID == id);
@@ -50,9 +47,39 @@ namespace AviationManagement.Controllers
             return Ok(customer);
         }
 
+        // GET: api/CustomerProfiles/5
+        [HttpGet("{id}/Tickets")]
+        public async Task<IActionResult> GetCustomerTickets([FromRoute] Guid id, string token)
+        {
+            // return BadRequest("Invailed verb.");
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (!await _tokenManager.CheckToken(new Token(id.ToString(), token)))
+            {
+                return BadRequest();
+            }
+
+            var customer = await _context.CustomerProfiles.SingleOrDefaultAsync(m => m.CustomerProfileID == id);
+
+            if (customer == null)
+            {
+                return NotFound();
+            }
+
+            await _context.Entry(customer)
+                .Collection(c => c.Tickets)
+                .LoadAsync();
+
+            return Ok(new { Tickets = customer.Tickets });
+        }
+
         // PUT: api/CustomerProfiles/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutCustomer([FromRoute] Guid id, [FromBody] CustomerProfile customer)
+        public async Task<IActionResult> PutCustomer([FromRoute] Guid id, string token, [FromBody] CustomerProfile customer)
         {
             if (!ModelState.IsValid)
             {
@@ -60,6 +87,11 @@ namespace AviationManagement.Controllers
             }
 
             if (id != customer.CustomerProfileID)
+            {
+                return BadRequest();
+            }
+
+            if (!await _tokenManager.CheckToken(new Token(id.ToString(), token)))
             {
                 return BadRequest();
             }
@@ -92,11 +124,21 @@ namespace AviationManagement.Controllers
         /// <param name="customer"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<IActionResult> PostCustomer([FromBody] CustomerProfile customer)
+        public async Task<IActionResult> PostCustomer([FromRoute] Guid id, string token, [FromBody] CustomerProfile customer)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
+            }
+
+            if (customer.CustomerProfileID != id)
+            {
+                return BadRequest();
+            }
+
+            if (!await _tokenManager.CheckToken(new Token(id.ToString(), token)))
+            {
+                return BadRequest();
             }
 
             _context.CustomerProfiles.Add(customer);
@@ -107,11 +149,16 @@ namespace AviationManagement.Controllers
 
         // DELETE: api/CustomerProfiles/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCustomer([FromRoute] Guid id)
+        public async Task<IActionResult> DeleteCustomer([FromRoute] Guid id, string token)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
+            }
+
+            if (!await _tokenManager.CheckToken(new Token(id.ToString(), token)))
+            {
+                return BadRequest();
             }
 
             var customer = await _context.CustomerProfiles.SingleOrDefaultAsync(m => m.CustomerProfileID == id);

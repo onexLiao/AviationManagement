@@ -29,6 +29,10 @@ namespace AviationManagement.Models
         /// </summary>
         public Area Destination { get; set; }
         /// <summary>
+        /// 距离（用于算里程数）
+        /// </summary>
+        public double Distance { get; set; }
+        /// <summary>
         /// 飞机型号
         /// </summary>
         public Plane Plane { get; set; }
