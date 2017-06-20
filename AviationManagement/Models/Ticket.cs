@@ -20,12 +20,14 @@ namespace AviationManagement.Models
         /// </summary>
         public virtual Flight Flight { get; set; }
 
-        public string FlightID { get; set; }
+        public Guid FlightID { get; set; }
         /// <summary>
         /// 对应顾客
         /// </summary>
         public virtual CustomerProfile Customer { get; set; }
 
         public Guid CustomerID { get; set; }
+
+        public double Price { get; set; }
     }
 }
