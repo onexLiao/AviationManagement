@@ -52,11 +52,13 @@ namespace AviationManagement.Models.Manager
             builder.Entity<Ticket>().HasKey(t => t.TicketID);
             builder.Entity<Ticket>()
                 .HasOne(t => t.Flight)
-                .WithMany(f => f.Tickets);
+                .WithMany(f => f.Tickets)
+                .HasForeignKey(t => t.FlightID);
 
             builder.Entity<Ticket>()
                 .HasOne(t => t.Customer)
-                .WithMany(c => c.Tickets);
+                .WithMany(c => c.Tickets)
+                .HasForeignKey(t => t.CustomerID);
 
             builder.Entity<Inform>().HasKey(i => i.InformID);
 

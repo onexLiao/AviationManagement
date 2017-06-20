@@ -9,6 +9,16 @@ namespace AviationManagement.Models
 {
     public enum Sex { Male, Female, Unknown }
 
+    public enum Prefer
+    {
+        BehindWindow,
+        LeaveWindow,
+        Smoke,
+        NonSmoke,
+        Vegetarian,
+        MeatEater,
+    }
+
     public class CustomerProfile
     {
         public Guid CustomerProfileID { get; set; }
@@ -22,6 +32,13 @@ namespace AviationManagement.Models
 
         public string NickName { get; set; }
 
+        public double FlightMiles { get; set; }
+
+        public int VIPLevel { get; set; }
+
+        public Prefer Prefer { get; set; }
+
+        public string SSR { get; set; }
 
         public IEnumerable<Ticket> Tickets { get; set; }
     }
