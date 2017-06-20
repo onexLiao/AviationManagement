@@ -25,6 +25,8 @@ namespace AviationManagement.Models.Manager
 
         public DbSet<Plane> Planes { get; set; }
 
+        public DbSet<Inform> Informs { get; set; }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             // Sets the properties that make up the primary key for this entity type.
@@ -56,9 +58,13 @@ namespace AviationManagement.Models.Manager
                 .HasOne(t => t.Customer)
                 .WithMany(c => c.Tickets);
 
+            builder.Entity<Inform>().HasKey(i => i.InformID);
+
             base.OnModelCreating(builder);
         }
 
         public DbSet<AviationManagement.Models.Ticket> Ticket { get; set; }
+
+        public DbSet<AviationManagement.Models.Inform> Inform { get; set; }
     }
 }

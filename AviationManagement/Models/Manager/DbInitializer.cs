@@ -72,8 +72,7 @@ namespace AviationManagement.Models.Manager
                 var profile = new CustomerProfile()
                 {
                     CustomerAlthorithm = withprofile,
-                    CustomerAlthorithmID = withprofile.ID,
-                    CustomerProfileID = Guid.NewGuid(),
+                    CustomerProfileID = withprofile.ID,
                     EMail = "zjxuan1996@outlook.com",
                     Sex = Sex.Male
                 };
