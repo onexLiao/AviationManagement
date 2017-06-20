@@ -59,6 +59,11 @@ namespace AviationManagement
                 c.SwaggerDoc("v1", new Info { Title = "My API", Version = "v1" });
             });
 
+            services.AddCors(options => options.AddPolicy("flight",
+                p => p.AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader()));
+
             // Add framework services.
             services.AddMvc();
         }
@@ -89,6 +94,8 @@ namespace AviationManagement
             });
 
             app.UseStaticFiles();
+
+            app.UseCors("flight");
 
             app.UseMvc();
 

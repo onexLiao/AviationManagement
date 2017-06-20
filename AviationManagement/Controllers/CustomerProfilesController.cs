@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using AviationManagement.Models;
 using AviationManagement.Models.Manager;
+using Microsoft.AspNetCore.Cors;
 
 namespace AviationManagement.Controllers
 {
@@ -25,7 +26,7 @@ namespace AviationManagement.Controllers
         }
 
         // GET: api/CustomerProfiles/5
-        [HttpGet("{id}")]
+        [HttpGet("{id}"), EnableCors("flight")]
         public async Task<IActionResult> GetCustomer([FromRoute] Guid id, string token)
         {
             if (!ModelState.IsValid)
@@ -49,7 +50,7 @@ namespace AviationManagement.Controllers
         }
 
         // GET: api/CustomerProfiles/5
-        [HttpGet("{id}/Tickets")]
+        [HttpGet("{id}/Tickets"), EnableCors("flight")]
         public async Task<IActionResult> GetCustomerTickets([FromRoute] Guid id, string token)
         {
             // return BadRequest("Invailed verb.");
@@ -79,7 +80,7 @@ namespace AviationManagement.Controllers
         }
 
         // PUT: api/CustomerProfiles/5
-        [HttpPut("{id}")]
+        [HttpPut("{id}"), EnableCors("flight")]
         public async Task<IActionResult> PutCustomer([FromRoute] Guid id, string token, [FromBody] CustomerProfile customer)
         {
             if (!ModelState.IsValid)
@@ -124,7 +125,7 @@ namespace AviationManagement.Controllers
         /// </summary>
         /// <param name="customer"></param>
         /// <returns></returns>
-        [HttpPost]
+        [HttpPost, EnableCors("flight")]
         public async Task<IActionResult> PostCustomer([FromRoute] Guid id, string token, [FromBody] CustomerProfile customer)
         {
             if (!ModelState.IsValid)
@@ -149,7 +150,7 @@ namespace AviationManagement.Controllers
         }
 
         // DELETE: api/CustomerProfiles/5
-        [HttpDelete("{id}")]
+        [HttpDelete("{id}"), EnableCors("flight")]
         public async Task<IActionResult> DeleteCustomer([FromRoute] Guid id, string token)
         {
             if (!ModelState.IsValid)

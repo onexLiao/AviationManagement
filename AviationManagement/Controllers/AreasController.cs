@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using AviationManagement;
 using AviationManagement.Models;
 using AviationManagement.Models.Manager;
+using Microsoft.AspNetCore.Cors;
 
 namespace AviationManagement.Controllers
 {
@@ -26,14 +27,14 @@ namespace AviationManagement.Controllers
         }
 
         // GET: api/Areas
-        [HttpGet]
+        [HttpGet, EnableCors("flight")]
         public IEnumerable<Area> GetAreas()
         {
             return _context.Areas;
         }
 
         // GET: api/Areas/5
-        [HttpGet("{id}")]
+        [HttpGet("{id}"), EnableCors("flight")]
         public async Task<IActionResult> GetArea([FromRoute] string id)
         {
             if (!ModelState.IsValid)
@@ -52,7 +53,7 @@ namespace AviationManagement.Controllers
         }
 
         // PUT: api/Areas/5
-        [HttpPut("{id}")]
+        [HttpPut("{id}"), EnableCors("flight")]
         public async Task<IActionResult> PutArea([FromRoute] string id, [FromBody] Area area)
         {
             if (!ModelState.IsValid)
@@ -87,7 +88,7 @@ namespace AviationManagement.Controllers
         }
 
         // POST: api/Areas
-        [HttpPost]
+        [HttpPost, EnableCors("flight")]
         public async Task<IActionResult> PostArea([FromRoute] string userId, string token, [FromBody] Area area)
         {
             // check vaildation
@@ -110,7 +111,7 @@ namespace AviationManagement.Controllers
 
         // DELETE: api/Areas/5
         // 管理员才可以
-        [HttpDelete("{id}")]
+        [HttpDelete("{id}"), EnableCors("flight")]
         public async Task<IActionResult> DeleteArea([FromRoute] string id, string userId, string token)
         {
             if (!ModelState.IsValid)

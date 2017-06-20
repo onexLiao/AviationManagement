@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using AviationManagement.Models;
 using AviationManagement.Models.Manager;
+using Microsoft.AspNetCore.Cors;
 
 namespace AviationManagement.Controllers
 {
@@ -25,14 +26,14 @@ namespace AviationManagement.Controllers
         }
 
         // GET: api/Planes
-        [HttpGet]
+        [HttpGet, EnableCors("flight")]
         public IEnumerable<Plane> GetPlanes()
         {
             return _context.Planes;
         }
 
         // GET: api/Planes/5
-        [HttpGet("{id}")]
+        [HttpGet("{id}"), EnableCors("flight")]
         public async Task<IActionResult> GetPlane([FromRoute] string id)
         {
             if (!ModelState.IsValid)
@@ -87,7 +88,7 @@ namespace AviationManagement.Controllers
 
         // POST: api/Planes
         // π‹¿Ì‘±
-        [HttpPost]
+        [HttpPost, EnableCors("flight")]
         public async Task<IActionResult> PostPlane([FromRoute] string userId, string token, [FromBody] Plane plane)
         {
             if (!ModelState.IsValid)

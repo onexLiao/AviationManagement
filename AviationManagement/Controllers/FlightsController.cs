@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using AviationManagement.Models;
 using AviationManagement.Models.Manager;
+using Microsoft.AspNetCore.Cors;
 
 namespace AviationManagement.Controllers
 {
@@ -25,14 +26,14 @@ namespace AviationManagement.Controllers
         }
 
         // GET: api/Flights
-        [HttpGet]
+        [HttpGet, EnableCors("flight")]
         public IEnumerable<Flight> GetFlights()
         {
             return _context.Flights;
         }
 
         // GET: api/Flights/5
-        [HttpGet("{id}")]
+        [HttpGet("{id}"), EnableCors("flight")]
         public async Task<IActionResult> GetFlight([FromRoute] Guid id)
         {
             if (!ModelState.IsValid)
@@ -51,7 +52,7 @@ namespace AviationManagement.Controllers
         }
 
         // GET: api/Flights/5/Tickets
-        [HttpGet("{id}/Tickets")]
+        [HttpGet("{id}/Tickets"), EnableCors("flight")]
         public async Task<IActionResult> GetFlightTickets([FromRoute] Guid id)
         {
             if (!ModelState.IsValid)
@@ -75,7 +76,7 @@ namespace AviationManagement.Controllers
 
         // PUT: api/Flights/5
         // 管理员 
-        [HttpPut("{id}")]
+        [HttpPut("{id}"), EnableCors("flight")]
         public async Task<IActionResult> PutFlight([FromRoute] Guid id, string userId, string token, [FromBody] Flight flight)
         {
             if (!ModelState.IsValid)
@@ -116,7 +117,7 @@ namespace AviationManagement.Controllers
 
         // POST: api/Flights
         // 管理员
-        [HttpPost]
+        [HttpPost, EnableCors("flight")]
         public async Task<IActionResult> PostFlight([FromRoute] string userId, string token, [FromBody] Flight flight)
         {
             if (!ModelState.IsValid)

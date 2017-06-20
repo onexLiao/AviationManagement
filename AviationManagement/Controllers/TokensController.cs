@@ -8,6 +8,7 @@ using AviationManagement.Models.Manager;
 using AviationManagement.Models;
 using AviationManagement.Models.Forms;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Cors;
 
 namespace AviationManagement.Controllers
 {
@@ -40,7 +41,7 @@ namespace AviationManagement.Controllers
         /// </summary>
         /// <param name="ticket"></param>
         /// <returns></returns>
-        [HttpPost]
+        [HttpPost, EnableCors("flight")]
         public async Task<IActionResult> PostToken([FromBody] AccountForm accountForm)
         {
             if (!ModelState.IsValid)
@@ -64,7 +65,7 @@ namespace AviationManagement.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [HttpDelete("{token}")]
+        [HttpDelete("{token}"), EnableCors("flight")]
         public async Task<IActionResult> DeleteSeat([FromRoute] string token)
         {
             if (!ModelState.IsValid)

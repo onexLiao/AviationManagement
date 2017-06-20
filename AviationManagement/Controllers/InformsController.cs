@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using AviationManagement.Models;
 using AviationManagement.Models.Manager;
+using Microsoft.AspNetCore.Cors;
 
 namespace AviationManagement.Controllers
 {
@@ -25,14 +26,14 @@ namespace AviationManagement.Controllers
         }
 
         // GET: api/Informs
-        [HttpGet]
+        [HttpGet, EnableCors("flight")]
         public IEnumerable<Inform> GetInforms()
         {
             return _context.Informs;
         }
 
         // GET: api/Informs/5
-        [HttpGet("{id}")]
+        [HttpGet("{id}"), EnableCors("flight")]
         public async Task<IActionResult> GetInform([FromRoute] Guid id)
         {
             if (!ModelState.IsValid)
@@ -52,7 +53,7 @@ namespace AviationManagement.Controllers
 
         // PUT: api/Informs/5
         // 管理员 
-        [HttpPut("{id}")]
+        [HttpPut("{id}"), EnableCors("flight")]
         public async Task<IActionResult> PutInform([FromRoute] Guid id, string userId, string token, [FromBody] Inform inform)
         {
             if (!ModelState.IsValid)
@@ -93,7 +94,7 @@ namespace AviationManagement.Controllers
 
         // POST: api/Informs
         // 管理员 
-        [HttpPost]
+        [HttpPost, EnableCors("flight")]
         public async Task<IActionResult> PostInform([FromRoute] string userId, string token, [FromBody] Inform inform)
         {
             if (!ModelState.IsValid)
@@ -114,7 +115,7 @@ namespace AviationManagement.Controllers
 
         // DELETE: api/Informs/5
         // 管理员 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id}"), EnableCors("flight")]
         public async Task<IActionResult> DeleteInform([FromRoute] Guid id, string userId, string token)
         {
             if (!ModelState.IsValid)

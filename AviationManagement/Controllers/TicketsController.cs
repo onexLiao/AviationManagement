@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using AviationManagement.Models;
 using AviationManagement.Models.Manager;
+using Microsoft.AspNetCore.Cors;
 
 namespace AviationManagement.Controllers
 {
@@ -32,7 +33,7 @@ namespace AviationManagement.Controllers
         //}
 
         // GET: api/Tickets/5
-        [HttpGet("{id}")]
+        [HttpGet("{id}"), EnableCors("flight")]
         public async Task<IActionResult> GetTicket([FromRoute] Guid id, string token)
         {
             if (!ModelState.IsValid)
@@ -91,7 +92,7 @@ namespace AviationManagement.Controllers
         //}
 
         // POST: api/Tickets
-        [HttpPost]
+        [HttpPost, EnableCors("flight")]
         public async Task<IActionResult> PostTicket([FromRoute] string userId, string token, [FromBody] Ticket ticket)
         {
             if (!ModelState.IsValid)
@@ -114,7 +115,7 @@ namespace AviationManagement.Controllers
         }
 
         // DELETE: api/Tickets/5
-        [HttpDelete("{id}")]
+        [HttpDelete("{id}"), EnableCors("flight")]
         public async Task<IActionResult> DeleteTicket([FromRoute] Guid id, string token)
         {
             if (!ModelState.IsValid)

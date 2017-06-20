@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using AviationManagement.Models;
 using AviationManagement.Models.Manager;
 using AviationManagement.Models.Forms;
+using Microsoft.AspNetCore.Cors;
 
 namespace AviationManagement.Controllers
 {
@@ -56,7 +57,7 @@ namespace AviationManagement.Controllers
         /// <summary>
         /// 改密码
         /// </summary>
-        [HttpPut("{id}")]
+        [HttpPut("{id}"), EnableCors("flight")]
         public async Task<IActionResult> PutCustomerAlthorithm([FromRoute] Guid id, string token, [FromBody] AccountForm accountForm)
         {
             if (!ModelState.IsValid)
@@ -105,7 +106,7 @@ namespace AviationManagement.Controllers
         /// <summary>
         /// 创建新账号
         /// </summary>
-        [HttpPost]
+        [HttpPost, EnableCors("flight")]
         public async Task<IActionResult> PostCustomerAlthorithm([FromBody] AccountForm accountForm)
         {
             if (!ModelState.IsValid)
