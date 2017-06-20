@@ -16,9 +16,12 @@ namespace AviationManagement.Controllers
     {
         private readonly WebAPIDbContext _context;
 
-        public TicketsController(WebAPIDbContext context)
+        private readonly ITokenManager _tokenManager;
+
+        public TicketsController(WebAPIDbContext context, ITokenManager tokenManager)
         {
             _context = context;
+            _tokenManager = tokenManager;
         }
 
         // GET: api/Tickets
@@ -30,11 +33,16 @@ namespace AviationManagement.Controllers
 
         // GET: api/Tickets/5
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetTicket([FromRoute] Guid id)
+        public async Task<IActionResult> GetTicket([FromRoute] Guid id, string userId, string token)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
+            }
+
+            if (!await _tokenManager.CheckToken(new Token(userId, token)))
+            {
+                return BadRequest("please login.");
             }
 
             var ticket = await _context.Ticket.SingleOrDefaultAsync(m => m.TicketID == id);
@@ -48,48 +56,56 @@ namespace AviationManagement.Controllers
         }
 
         // PUT: api/Tickets/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutTicket([FromRoute] Guid id, [FromBody] Ticket ticket)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+        //[HttpPut("{id}")]
+        //public async Task<IActionResult> PutTicket([FromRoute] Guid id, [FromBody] Ticket ticket)
+        //{
+        //    if (!ModelState.IsValid)
+        //    {
+        //        return BadRequest(ModelState);
+        //    }
 
-            if (id != ticket.TicketID)
-            {
-                return BadRequest();
-            }
+        //    if (id != ticket.TicketID)
+        //    {
+        //        return BadRequest();
+        //    }
 
-            _context.Entry(ticket).State = EntityState.Modified;
+        //    _context.Entry(ticket).State = EntityState.Modified;
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!TicketExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+        //    try
+        //    {
+        //        await _context.SaveChangesAsync();
+        //    }
+        //    catch (DbUpdateConcurrencyException)
+        //    {
+        //        if (!TicketExists(id))
+        //        {
+        //            return NotFound();
+        //        }
+        //        else
+        //        {
+        //            throw;
+        //        }
+        //    }
 
-            return NoContent();
-        }
+        //    return NoContent();
+        //}
 
         // POST: api/Tickets
         [HttpPost]
-        public async Task<IActionResult> PostTicket([FromBody] Ticket ticket)
+        public async Task<IActionResult> PostTicket([FromRoute] string userId, string token, [FromBody] Ticket ticket)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
+
+            if (!await _tokenManager.CheckToken(new Token(userId, token)))
+            {
+                return BadRequest("please login.");
+            }
+
+            ticket.TicketID = Guid.NewGuid();
+            ticket.CustomerID = Guid.Parse(userId);
 
             _context.Ticket.Add(ticket);
             await _context.SaveChangesAsync();
@@ -99,17 +115,28 @@ namespace AviationManagement.Controllers
 
         // DELETE: api/Tickets/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteTicket([FromRoute] Guid id)
+        public async Task<IActionResult> DeleteTicket([FromRoute] Guid id, string userId, string token)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
+            if (!await _tokenManager.CheckToken(new Token(userId, token)))
+            {
+                return BadRequest("please login.");
+            }
+
             var ticket = await _context.Ticket.SingleOrDefaultAsync(m => m.TicketID == id);
             if (ticket == null)
             {
                 return NotFound();
+            }
+
+            // 判断 ticket 是否属于该用户
+            if (ticket.Customer.CustomerProfileID.ToString() != userId)
+            {
+                return BadRequest("Not your Ticket");
             }
 
             _context.Ticket.Remove(ticket);

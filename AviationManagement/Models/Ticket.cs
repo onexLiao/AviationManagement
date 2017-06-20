@@ -26,6 +26,6 @@ namespace AviationManagement.Models
         /// </summary>
         public virtual CustomerProfile Customer { get; set; }
 
-        public string CustomerID { get; set; }
+        public Guid CustomerID { get; set; }
     }
 }

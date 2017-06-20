@@ -26,38 +26,38 @@ namespace AviationManagement.Controllers
         }
 
         // GET: api/CustomerAlthorithms
-        [HttpGet]
-        public IEnumerable<CustomerAlthorithm> GetCustomerAlthorithms()
-        {
-            // ½ûÖ¹
-            return _context.CustomerAlthorithms;
-        }
+        //[HttpGet]
+        //public IEnumerable<CustomerAlthorithm> GetCustomerAlthorithms()
+        //{
+        //    return _context.CustomerAlthorithms;
+        //}
 
         // GET: api/CustomerAlthorithms/5
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetCustomerAlthorithm([FromRoute] Guid id)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+        //[HttpGet("{id}")]
+        //public async Task<IActionResult> GetCustomerAlthorithm([FromRoute] Guid id)
+        //{
+        //    if (!ModelState.IsValid)
+        //    {
+        //        return BadRequest(ModelState);
+        //    }
 
-            var customerAlthorithm = await _context.CustomerAlthorithms.SingleOrDefaultAsync(m => m.ID == id);
+        //    var customerAlthorithm = await _context.CustomerAlthorithms.SingleOrDefaultAsync(m => m.ID == id);
 
-            if (customerAlthorithm == null)
-            {
-                return NotFound();
-            }
+        //    if (customerAlthorithm == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            return Ok(customerAlthorithm);
-        }
+        //    return Ok(customerAlthorithm);
+        //}
 
         // PUT: api/CustomerAlthorithms/5
+
         /// <summary>
         /// ¸ÄÃÜÂë
         /// </summary>
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutCustomerAlthorithm([FromRoute] Guid id, [FromBody] AccountForm accountForm)
+        public async Task<IActionResult> PutCustomerAlthorithm([FromRoute] Guid id, string token, [FromBody] AccountForm accountForm)
         {
             if (!ModelState.IsValid)
             {
@@ -69,7 +69,16 @@ namespace AviationManagement.Controllers
                 return BadRequest("need password");
             }
 
-            var customerAlthorithm = new CustomerAlthorithm() { Password = accountForm.Password };
+            if (!await _tokenManager.AlthorithmCheck(new Token(id.ToString(), token)))
+            {
+                return BadRequest("invailed user");
+            }
+
+            var customerAlthorithm = new CustomerAlthorithm()
+            {
+                ID = id,
+                Password = accountForm.Password
+            };
 
             _context.Entry(customerAlthorithm).State = EntityState.Modified;
 
@@ -128,26 +137,27 @@ namespace AviationManagement.Controllers
             return CreatedAtAction("GetCustomerAlthorithm", new { id = customerAlthorithm.ID }, await token );
         }
 
+        // ÕËºÅ²»¿É×¢Ïú
         // DELETE: api/CustomerAlthorithms/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCustomerAlthorithm([FromRoute] Guid id)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+        //[HttpDelete("{id}")]
+        //public async Task<IActionResult> DeleteCustomerAlthorithm([FromRoute] Guid id)
+        //{
+        //    if (!ModelState.IsValid)
+        //    {
+        //        return BadRequest(ModelState);
+        //    }
 
-            var customerAlthorithm = await _context.CustomerAlthorithms.SingleOrDefaultAsync(m => m.ID == id);
-            if (customerAlthorithm == null)
-            {
-                return NotFound();
-            }
+        //    var customerAlthorithm = await _context.CustomerAlthorithms.SingleOrDefaultAsync(m => m.ID == id);
+        //    if (customerAlthorithm == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            _context.CustomerAlthorithms.Remove(customerAlthorithm);
-            await _context.SaveChangesAsync();
+        //    _context.CustomerAlthorithms.Remove(customerAlthorithm);
+        //    await _context.SaveChangesAsync();
 
-            return Ok(customerAlthorithm);
-        }
+        //    return Ok(customerAlthorithm);
+        //}
 
         private bool CustomerAlthorithmExists(Guid id)
         {

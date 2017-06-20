@@ -28,5 +28,7 @@ namespace AviationManagement.Models.Manager
         /// <summary> 清除 token </summary>
         /// <param name="userId"> userId 登录用户的 id </param>
         Task DeleteToken(string userId);
+
+        Task<bool> AlthorithmCheck(Token token);
     }
 }

@@ -57,14 +57,16 @@ namespace AviationManagement.Models.Manager
                 };
                 planes.ForEach(p => context.Planes.Add(p));
                 context.SaveChanges();
-            }
+            }// DB has been seeded
 
+            // Add Customers
             if (!context.CustomerAlthorithms.Any())
             {
                 var althorithms = new List<CustomerAlthorithm>()
                 {
                     new CustomerAlthorithm() { ID = Guid.NewGuid(), Account = "leetcode", Password = "leetcode" },
-                    new CustomerAlthorithm() { ID = Guid.NewGuid(), Account = "xian", Password = "xian" }
+                    new CustomerAlthorithm() { ID = Guid.NewGuid(), Account = "xian", Password = "xian" },
+                    new CustomerAlthorithm() { ID = Guid.NewGuid(), Account = "xuan", Password = "xuan" , Role = Role.Admin}
                 };
                 var withprofile = new CustomerAlthorithm() { ID = Guid.NewGuid(), Account = "xua", Password = "xua" };
                 var profile = new CustomerProfile()
@@ -79,9 +81,7 @@ namespace AviationManagement.Models.Manager
                 althorithms.ForEach(c => context.CustomerAlthorithms.Add(c));
                 context.CustomerProfiles.Add(profile);
                 context.SaveChanges();
-            }
-
-
+            }// DB has been seeded
         }
     }
 }

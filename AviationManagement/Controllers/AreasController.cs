@@ -17,9 +17,12 @@ namespace AviationManagement.Controllers
     {
         private readonly WebAPIDbContext _context;
 
-        public AreasController(WebAPIDbContext context)
+        private readonly ITokenManager _tokenManager;
+
+        public AreasController(WebAPIDbContext context, ITokenManager tokenManager)
         {
             _context = context;
+            _tokenManager = tokenManager;
         }
 
         // GET: api/Areas
@@ -85,8 +88,10 @@ namespace AviationManagement.Controllers
 
         // POST: api/Areas
         [HttpPost]
-        public async Task<IActionResult> PostArea([FromBody] Area area)
+        public async Task<IActionResult> PostArea([FromRoute] string userId, string token, [FromBody] Area area)
         {
+            // check vaildation
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -99,13 +104,20 @@ namespace AviationManagement.Controllers
         }
 
         // DELETE: api/Areas/5
+        // 管理员才可以
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteArea([FromRoute] string id)
+        public async Task<IActionResult> DeleteArea([FromRoute] string id, string userId, string token)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
+            // vaildation check
+            if (!await _tokenManager.AlthorithmCheck(new Token(userId, token)))
+            {
+                return BadRequest("Invailed role.");
+            }
+
 
             var area = await _context.Areas.SingleOrDefaultAsync(m => m.AreaID == id);
             if (area == null)

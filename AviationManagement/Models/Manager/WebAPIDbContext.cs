@@ -35,27 +35,26 @@ namespace AviationManagement.Models.Manager
             builder.Entity<CustomerAlthorithm>().Property(c => c.Password).IsRequired();
 
             builder.Entity<CustomerAlthorithm>().HasAlternateKey(c => c.Account);
-            builder.Entity<CustomerAlthorithm>()
-                .HasOne(c => c.CustomerProfile)
-                .WithOne(c => c.CustomerAlthorithm)
-                .HasForeignKey<CustomerProfile>(c => c.CustomerAlthorithmID);
 
             builder.Entity<CustomerProfile>().HasKey(c => c.CustomerProfileID);
-            builder.Entity<CustomerProfile>().Property(c => c.CustomerAlthorithmID).IsRequired();
             builder.Entity<CustomerProfile>()
-                .HasMany(c => c.Tickets)
-                .WithOne(t => t.Customer);
-
+                .HasOne(c => c.CustomerAlthorithm)
+                .WithOne(c => c.CustomerProfile)
+                .HasForeignKey<CustomerProfile>(c => c.CustomerProfileID);
 
             builder.Entity<Plane>().HasKey(p => p.PlaneID);
             builder.Entity<Plane>().Ignore(p => p.TotalSeats);
 
             builder.Entity<Flight>().HasKey(f => f.FligtID);
-            builder.Entity<Flight>()
-                .HasMany(f => f.Tickets)
-                .WithOne(t => t.Flight);
 
             builder.Entity<Ticket>().HasKey(t => t.TicketID);
+            builder.Entity<Ticket>()
+                .HasOne(t => t.Flight)
+                .WithMany(f => f.Tickets);
+
+            builder.Entity<Ticket>()
+                .HasOne(t => t.Customer)
+                .WithMany(c => c.Tickets);
 
             base.OnModelCreating(builder);
         }

@@ -16,9 +16,12 @@ namespace AviationManagement.Controllers
     {
         private readonly WebAPIDbContext _context;
 
-        public PlanesController(WebAPIDbContext context)
+        private readonly ITokenManager _tokenManager;
+
+        public PlanesController(WebAPIDbContext context, ITokenManager tokenManager)
         {
             _context = context;
+            _tokenManager = tokenManager;
         }
 
         // GET: api/Planes
@@ -48,47 +51,53 @@ namespace AviationManagement.Controllers
         }
 
         // PUT: api/Planes/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutPlane([FromRoute] string id, [FromBody] Plane plane)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+        //[HttpPut("{id}")]
+        //public async Task<IActionResult> PutPlane([FromRoute] string id, [FromBody] Plane plane)
+        //{
+        //    if (!ModelState.IsValid)
+        //    {
+        //        return BadRequest(ModelState);
+        //    }
 
-            if (id != plane.PlaneID)
-            {
-                return BadRequest();
-            }
+        //    if (id != plane.PlaneID)
+        //    {
+        //        return BadRequest();
+        //    }
 
-            _context.Entry(plane).State = EntityState.Modified;
+        //    _context.Entry(plane).State = EntityState.Modified;
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!PlaneExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+        //    try
+        //    {
+        //        await _context.SaveChangesAsync();
+        //    }
+        //    catch (DbUpdateConcurrencyException)
+        //    {
+        //        if (!PlaneExists(id))
+        //        {
+        //            return NotFound();
+        //        }
+        //        else
+        //        {
+        //            throw;
+        //        }
+        //    }
 
-            return NoContent();
-        }
+        //    return NoContent();
+        //}
 
         // POST: api/Planes
+        // 管理员
         [HttpPost]
-        public async Task<IActionResult> PostPlane([FromBody] Plane plane)
+        public async Task<IActionResult> PostPlane([FromRoute] string userId, string token, [FromBody] Plane plane)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
+            }
+
+            if (!await _tokenManager.AlthorithmCheck(new Token(userId, token)))
+            {
+                return BadRequest("Invailed user");
             }
 
             _context.Planes.Add(plane);
@@ -98,25 +107,31 @@ namespace AviationManagement.Controllers
         }
 
         // DELETE: api/Planes/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeletePlane([FromRoute] string id)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+        // 管理员
+        //[HttpDelete("{id}")]
+        //public async Task<IActionResult> DeletePlane([FromRoute] string id, string userId, string token)
+        //{
+        //    if (!ModelState.IsValid)
+        //    {
+        //        return BadRequest(ModelState);
+        //    }
 
-            var plane = await _context.Planes.SingleOrDefaultAsync(m => m.PlaneID == id);
-            if (plane == null)
-            {
-                return NotFound();
-            }
+        //    if (!await _tokenManager.AlthorithmCheck(new Token(userId, token)))
+        //    {
+        //        return BadRequest("Invailed user");
+        //    }
 
-            _context.Planes.Remove(plane);
-            await _context.SaveChangesAsync();
+        //    var plane = await _context.Planes.SingleOrDefaultAsync(m => m.PlaneID == id);
+        //    if (plane == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            return Ok(plane);
-        }
+        //    _context.Planes.Remove(plane);
+        //    await _context.SaveChangesAsync();
+
+        //    return Ok(plane);
+        //}
 
         private bool PlaneExists(string id)
         {

@@ -13,9 +13,6 @@ namespace AviationManagement.Models
     {
         public Guid CustomerProfileID { get; set; }
 
-        // 外键连接
-        public Guid CustomerAlthorithmID { get; set; }
-
         public CustomerAlthorithm CustomerAlthorithm { get; set; }
 
         // 个人资料

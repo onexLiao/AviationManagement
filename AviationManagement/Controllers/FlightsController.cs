@@ -16,9 +16,12 @@ namespace AviationManagement.Controllers
     {
         private readonly WebAPIDbContext _context;
 
-        public FlightsController(WebAPIDbContext context)
+        private readonly ITokenManager _tokenManager;
+
+        public FlightsController(WebAPIDbContext context, ITokenManager tokenManager)
         {
             _context = context;
+            _tokenManager = tokenManager;
         }
 
         // GET: api/Flights
@@ -48,8 +51,9 @@ namespace AviationManagement.Controllers
         }
 
         // PUT: api/Flights/5
+        // 管理员 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutFlight([FromRoute] Guid id, [FromBody] Flight flight)
+        public async Task<IActionResult> PutFlight([FromRoute] Guid id, string userId, string token, [FromBody] Flight flight)
         {
             if (!ModelState.IsValid)
             {
@@ -59,6 +63,11 @@ namespace AviationManagement.Controllers
             if (id != flight.FligtID)
             {
                 return BadRequest();
+            }
+
+            if (!await _tokenManager.AlthorithmCheck(new Token(userId, token)))
+            {
+                return BadRequest("Invailed user");
             }
 
             _context.Entry(flight).State = EntityState.Modified;
@@ -83,12 +92,18 @@ namespace AviationManagement.Controllers
         }
 
         // POST: api/Flights
+        // 管理员
         [HttpPost]
-        public async Task<IActionResult> PostFlight([FromBody] Flight flight)
+        public async Task<IActionResult> PostFlight([FromRoute] string userId, string token, [FromBody] Flight flight)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
+            }
+
+            if (!await _tokenManager.AlthorithmCheck(new Token(userId, token)))
+            {
+                return BadRequest("Invailed user");
             }
 
             _context.Flights.Add(flight);
@@ -98,25 +113,30 @@ namespace AviationManagement.Controllers
         }
 
         // DELETE: api/Flights/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteFlight([FromRoute] Guid id)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+        //[HttpDelete("{id}")]
+        //public async Task<IActionResult> DeleteFlight([FromRoute] string userId, string token, [FromRoute] Guid id)
+        //{
+        //    if (!ModelState.IsValid)
+        //    {
+        //        return BadRequest(ModelState);
+        //    }
 
-            var flight = await _context.Flights.SingleOrDefaultAsync(m => m.FligtID == id);
-            if (flight == null)
-            {
-                return NotFound();
-            }
+        //    if (!await _tokenManager.AlthorithmCheck(new Token(userId, token)))
+        //    {
+        //        return BadRequest("Invailed user");
+        //    }
 
-            _context.Flights.Remove(flight);
-            await _context.SaveChangesAsync();
+        //    var flight = await _context.Flights.SingleOrDefaultAsync(m => m.FligtID == id);
+        //    if (flight == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            return Ok(flight);
-        }
+        //    _context.Flights.Remove(flight);
+        //    await _context.SaveChangesAsync();
+
+        //    return Ok(flight);
+        //}
 
         private bool FlightExists(Guid id)
         {

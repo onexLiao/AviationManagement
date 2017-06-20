@@ -7,16 +7,19 @@ using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Caching.Distributed;
 using System.Text;
 using System.Security.Cryptography;
+using Microsoft.EntityFrameworkCore;
 
 namespace AviationManagement.Models.Manager
 {
     class RedisTokenManager : ITokenManager
     {
-        private IDistributedCache _redis;
+        private readonly WebAPIDbContext _context;
+        private readonly IDistributedCache _redis;
 
-        public RedisTokenManager(IDistributedCache cache)
+        public RedisTokenManager(IDistributedCache cache, WebAPIDbContext context)
         {
             _redis = cache;
+            _context = context;
         }
 
         /// <summary> 创建一个 token 关联上指定用户 </summary>
@@ -57,6 +60,26 @@ namespace AviationManagement.Models.Manager
             }
             // 如果验证成功，说明此用户进行了一次有效操作，延长 token 的过期时间
             await _redis.RefreshAsync(token);
+            return true;
+        }
+        public async Task<bool> AlthorithmCheck(Token token)
+        {
+            if (!await CheckToken(token))
+            {
+                return false;
+            }
+
+            var user = await _context.CustomerAlthorithms.SingleOrDefaultAsync(c => c.ID.ToString() == token.UserId);
+            if (user == null)
+            {
+                return false;
+            }
+
+            if (user.Role != Role.Admin)
+            {
+                return false;
+            }
+
             return true;
         }
         ///// <summary> 从字符串中解析 token </summary>
