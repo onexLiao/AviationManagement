@@ -94,7 +94,8 @@ namespace AviationManagement
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "swagger/");
+                    template: "{controller=Home}/{action=Index}/{id?}"
+                    );
             });
 
             DbInitializer.Initialize(context);

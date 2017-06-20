@@ -7,10 +7,10 @@ services:
       - DB_PASSWORD=sdfewlrcxiv
       - DB_DATABASE=flight
     ports:
-      - "80"
+      - "80:80"
 
   db:
-   image: mysql:utf8
+   image: daocloud.io/zjxuan/mysql-utf8
    environment:
       - MYSQL_ROOT_PASSWORD=sdfewlrcxiv
       - MYSQL_DATABASE=flight
