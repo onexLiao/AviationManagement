@@ -6,6 +6,7 @@ using Microsoft.Extensions.Caching.Redis;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Caching.Distributed;
 using System.Text;
+using System.Security.Cryptography;
 
 namespace AviationManagement.Models.Manager
 {
@@ -31,6 +32,13 @@ namespace AviationManagement.Models.Manager
                 new DistributedCacheEntryOptions() { SlidingExpiration = new TimeSpan(1, 0, 0) });
             return model;
         }
+        /// <summary> 创建一个 token 关联上指定用户 </summary>
+        /// <param name="userId"> userId 指定用户的 id </param>
+        /// <returns> 生成的 token </returns>
+        public async Task<Token> CreateToken(Guid userId)
+        {
+            return await CreateToken(userId.ToString());
+        }
         /// <summary> 检查 token 是否有效 </summary>
         /// <param name="model"> model token </param>
         /// <returns> 是否有效 </returns>
@@ -40,6 +48,7 @@ namespace AviationManagement.Models.Manager
             {
                 return false;
             }
+            
             var bytes = await _redis.GetAsync(model.TokenString);
             string token = Encoding.UTF8.GetString(bytes);
             if (token == null || !(token == model.TokenString))
@@ -50,25 +59,25 @@ namespace AviationManagement.Models.Manager
             await _redis.RefreshAsync(token);
             return true;
         }
-        /// <summary> 从字符串中解析 token </summary>
-        /// <param name="authentication"> authentication 加密后的字符串 </param>
-        /// <returns> Tocken </returns>
-        public async Task<Token> GetToken(String authentication)
-        {
-            if (authentication == null || authentication.Length == 0)
-            {
-                return null;
-            }
-            String[] param = authentication.Split('_');
-            if (param.Length != 2)
-            {
-                return null;
-            }
-            // 使用 userId 和源 token 简单拼接成的 token，可以增加加密措施
-            string userId = param[0];
-            String token = param[1];
-            return new Token(userId, token);
-        }
+        ///// <summary> 从字符串中解析 token </summary>
+        ///// <param name="authentication"> authentication 加密后的字符串 </param>
+        ///// <returns> Tocken </returns>
+        //public async Task<Token> GetToken(String authentication)
+        //{
+        //    if (authentication == null || authentication.Length == 0)
+        //    {
+        //        return null;
+        //    }
+        //    String[] param = authentication.Split('_');
+        //    if (param.Length != 2)
+        //    {
+        //        return null;
+        //    }
+        //    // 使用 userId 和源 token 简单拼接成的 token，可以增加加密措施
+        //    string userId = param[0];
+        //    String token = param[1];
+        //    return new Token(userId, token);
+        //}
         /// <summary> 清除 token </summary>
         /// <param name="userId"> userId 登录用户的 id </param>
         public async Task DeleteToken(string userId)

@@ -6,19 +6,20 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using AviationManagement.Models.Manager;
 using AviationManagement.Models;
+using AviationManagement.Models.Forms;
 using Microsoft.EntityFrameworkCore;
 
 namespace AviationManagement.Controllers
 {
     [Produces("application/json")]
-    [Route("api/Session")]
-    public class TokenController : Controller
+    [Route("api/Tokens")]
+    public class TokensController : Controller
     {
         private ITokenManager _tokenManager;
 
         private WebAPIDbContext _context;
 
-        public TokenController(ITokenManager tokenManager, WebAPIDbContext context)
+        public TokensController(ITokenManager tokenManager, WebAPIDbContext context)
         {
             _tokenManager = tokenManager;
             _context = context;
@@ -40,20 +41,20 @@ namespace AviationManagement.Controllers
         /// <param name="ticket"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<IActionResult> PostToken([FromBody] CustomerAlthorithm customerAlthorithm)
+        public async Task<IActionResult> PostToken([FromBody] AccountForm accountForm)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            CustomerAlthorithm cust = await _context.CustomerAlthorithms.SingleOrDefaultAsync(m => m.Account == customerAlthorithm.Account);
+            CustomerAlthorithm cust = await _context.CustomerAlthorithms.SingleOrDefaultAsync(m => m.Account == accountForm.Account);
 
-            if (cust == null || cust.Password != customerAlthorithm.Password)
+            if (cust == null || cust.Password != accountForm.Password)
             {
                 return BadRequest("Account Not Exist Or Wrong Password");
             }
             // pass auth
-            var token = await _tokenManager.CreateToken(cust.CustomerID.ToString());
+            var token = await _tokenManager.CreateToken(cust.ID.ToString());
 
             return CreatedAtAction("GetTicket", new { token = token.TokenString }, token);
         }

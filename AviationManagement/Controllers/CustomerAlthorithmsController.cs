@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using AviationManagement.Models;
+using AviationManagement.Models.Manager;
+using AviationManagement.Models.Forms;
 
 namespace AviationManagement.Controllers
 {
@@ -15,15 +17,19 @@ namespace AviationManagement.Controllers
     {
         private readonly WebAPIDbContext _context;
 
-        public CustomerAlthorithmsController(WebAPIDbContext context)
+        private readonly ITokenManager _tokenManager;
+
+        public CustomerAlthorithmsController(WebAPIDbContext context, ITokenManager tokenManager)
         {
             _context = context;
+            _tokenManager = tokenManager;
         }
 
         // GET: api/CustomerAlthorithms
         [HttpGet]
         public IEnumerable<CustomerAlthorithm> GetCustomerAlthorithms()
         {
+            // 禁止
             return _context.CustomerAlthorithms;
         }
 
@@ -36,7 +42,7 @@ namespace AviationManagement.Controllers
                 return BadRequest(ModelState);
             }
 
-            var customerAlthorithm = await _context.CustomerAlthorithms.SingleOrDefaultAsync(m => m.CustomerAlthorithmID == id);
+            var customerAlthorithm = await _context.CustomerAlthorithms.SingleOrDefaultAsync(m => m.ID == id);
 
             if (customerAlthorithm == null)
             {
@@ -47,18 +53,23 @@ namespace AviationManagement.Controllers
         }
 
         // PUT: api/CustomerAlthorithms/5
+        /// <summary>
+        /// 改密码
+        /// </summary>
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutCustomerAlthorithm([FromRoute] Guid id, [FromBody] CustomerAlthorithm customerAlthorithm)
+        public async Task<IActionResult> PutCustomerAlthorithm([FromRoute] Guid id, [FromBody] AccountForm accountForm)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            if (id != customerAlthorithm.CustomerAlthorithmID)
+            if (accountForm.Password == null || accountForm.Password.Length == 0)
             {
-                return BadRequest();
+                return BadRequest("need password");
             }
+
+            var customerAlthorithm = new CustomerAlthorithm() { Password = accountForm.Password };
 
             _context.Entry(customerAlthorithm).State = EntityState.Modified;
 
@@ -82,18 +93,39 @@ namespace AviationManagement.Controllers
         }
 
         // POST: api/CustomerAlthorithms
+        /// <summary>
+        /// 创建新账号
+        /// </summary>
         [HttpPost]
-        public async Task<IActionResult> PostCustomerAlthorithm([FromBody] CustomerAlthorithm customerAlthorithm)
+        public async Task<IActionResult> PostCustomerAlthorithm([FromBody] AccountForm accountForm)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            _context.CustomerAlthorithms.Add(customerAlthorithm);
-            await _context.SaveChangesAsync();
+            // 合法性检查
+            if (accountForm.Account == null || accountForm.Account.Length == 0 ||
+                accountForm.Password == null || accountForm.Password.Length == 0)
+            {
+                return BadRequest("need password");
+            }
 
-            return CreatedAtAction("GetCustomerAlthorithm", new { id = customerAlthorithm.CustomerAlthorithmID }, customerAlthorithm);
+            var customerAlthorithm = new CustomerAlthorithm()
+            {
+                ID = Guid.NewGuid(),
+                Account = accountForm.Account,
+                Password = accountForm.Password
+            };
+
+            _context.CustomerAlthorithms.Add(customerAlthorithm);
+            // 存账号
+            var task = _context.SaveChangesAsync();
+            // 存token
+            var token = _tokenManager.CreateToken(customerAlthorithm.ID);
+
+            await task;
+            return CreatedAtAction("GetCustomerAlthorithm", new { id = customerAlthorithm.ID }, await token );
         }
 
         // DELETE: api/CustomerAlthorithms/5
@@ -105,7 +137,7 @@ namespace AviationManagement.Controllers
                 return BadRequest(ModelState);
             }
 
-            var customerAlthorithm = await _context.CustomerAlthorithms.SingleOrDefaultAsync(m => m.CustomerAlthorithmID == id);
+            var customerAlthorithm = await _context.CustomerAlthorithms.SingleOrDefaultAsync(m => m.ID == id);
             if (customerAlthorithm == null)
             {
                 return NotFound();
@@ -119,7 +151,7 @@ namespace AviationManagement.Controllers
 
         private bool CustomerAlthorithmExists(Guid id)
         {
-            return _context.CustomerAlthorithms.Any(e => e.CustomerAlthorithmID == id);
+            return _context.CustomerAlthorithms.Any(e => e.ID == id);
         }
     }
 }

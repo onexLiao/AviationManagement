@@ -18,10 +18,14 @@ namespace AviationManagement.Models
         /// <summary>
         /// 对应航班
         /// </summary>
-        public Flight Flight { get; set; }
+        public virtual Flight Flight { get; set; }
+
+        public string FlightID { get; set; }
         /// <summary>
         /// 对应顾客
         /// </summary>
-        public Customer Customer { get; set; }
+        public virtual CustomerProfile Customer { get; set; }
+
+        public string CustomerID { get; set; }
     }
 }

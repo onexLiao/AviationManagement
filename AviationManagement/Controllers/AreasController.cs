@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using AviationManagement;
 using AviationManagement.Models;
+using AviationManagement.Models.Manager;
 
 namespace AviationManagement.Controllers
 {

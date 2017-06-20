@@ -35,6 +35,6 @@ namespace AviationManagement.Models
         /// <summary>
         /// 航班座位情况
         /// </summary>
-        public ICollection<Seat> Seats { get; set; }
+        public ICollection<Ticket> Tickets { get; set; }
     }
 }

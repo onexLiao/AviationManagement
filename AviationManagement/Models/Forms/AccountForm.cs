@@ -1,19 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AviationManagement.Models
+namespace AviationManagement.Models.Forms
 {
-    public class CustomerAlthorithm
+    /// <summary>
+    /// 用于登陆和创建账号等操作
+    /// </summary>
+    public class AccountForm
     {
         public Guid ID { get; set; }
-
-        public CustomerProfile CustomerProfile { get; set; }
 
         public string Account { get; set; }
 
         public string Password { get; set; }
+
+        public string Token { get; set; }
     }
 }

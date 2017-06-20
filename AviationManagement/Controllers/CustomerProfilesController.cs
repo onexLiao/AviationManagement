@@ -6,37 +6,41 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using AviationManagement.Models;
+using AviationManagement.Models.Manager;
 
 namespace AviationManagement.Controllers
 {
     [Produces("application/json")]
-    [Route("api/Customers")]
-    public class CustomersController : Controller
+    [Route("api/CustomerProfiles")]
+    public class CustomerProfilesController : Controller
     {
         private readonly WebAPIDbContext _context;
 
-        public CustomersController(WebAPIDbContext context)
+        public CustomerProfilesController(WebAPIDbContext context, ITokenManager tokenManager)
         {
             _context = context;
         }
 
         // GET: api/Customers
         [HttpGet]
-        public IEnumerable<Customer> GetCustomers()
+        public IEnumerable<CustomerProfile> GetCustomers()
         {
-            return _context.Customers;
+            // return BadRequest("Invailed verb.");
+            return _context.CustomerProfiles;
         }
 
         // GET: api/Customers/5
         [HttpGet("{id}")]
         public async Task<IActionResult> GetCustomer([FromRoute] Guid id)
         {
+            // return BadRequest("Invailed verb.");
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var customer = await _context.Customers.SingleOrDefaultAsync(m => m.CustomerID == id);
+            var customer = await _context.CustomerProfiles.SingleOrDefaultAsync(m => m.CustomerProfileID == id);
 
             if (customer == null)
             {
@@ -48,14 +52,14 @@ namespace AviationManagement.Controllers
 
         // PUT: api/Customers/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutCustomer([FromRoute] Guid id, [FromBody] Customer customer)
+        public async Task<IActionResult> PutCustomer([FromRoute] Guid id, [FromBody] CustomerProfile customer)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            if (id != customer.CustomerID)
+            if (id != customer.CustomerProfileID)
             {
                 return BadRequest();
             }
@@ -82,18 +86,23 @@ namespace AviationManagement.Controllers
         }
 
         // POST: api/Customers
+        /// <summary>
+        /// ´´½¨
+        /// </summary>
+        /// <param name="customer"></param>
+        /// <returns></returns>
         [HttpPost]
-        public async Task<IActionResult> PostCustomer([FromBody] Customer customer)
+        public async Task<IActionResult> PostCustomer([FromBody] CustomerProfile customer)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            _context.Customers.Add(customer);
+            _context.CustomerProfiles.Add(customer);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetCustomer", new { id = customer.CustomerID }, customer);
+            return CreatedAtAction("GetCustomer", new { id = customer.CustomerProfileID }, customer);
         }
 
         // DELETE: api/Customers/5
@@ -105,13 +114,13 @@ namespace AviationManagement.Controllers
                 return BadRequest(ModelState);
             }
 
-            var customer = await _context.Customers.SingleOrDefaultAsync(m => m.CustomerID == id);
+            var customer = await _context.CustomerProfiles.SingleOrDefaultAsync(m => m.CustomerProfileID == id);
             if (customer == null)
             {
                 return NotFound();
             }
 
-            _context.Customers.Remove(customer);
+            _context.CustomerProfiles.Remove(customer);
             await _context.SaveChangesAsync();
 
             return Ok(customer);
@@ -119,7 +128,7 @@ namespace AviationManagement.Controllers
 
         private bool CustomerExists(Guid id)
         {
-            return _context.Customers.Any(e => e.CustomerID == id);
+            return _context.CustomerProfiles.Any(e => e.CustomerProfileID == id);
         }
     }
 }

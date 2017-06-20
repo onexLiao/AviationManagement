@@ -10,8 +10,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using AviationManagement.Models;
 using AviationManagement.Models.Manager;
-using Microsoft.Extensions.Caching.Redis;
-using Microsoft.AspNetCore.Session;
+using System.Net;
+using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace AviationManagement
 {
@@ -37,16 +38,26 @@ namespace AviationManagement
             var dbName = Environment.GetEnvironmentVariable("DB_DATABASE");
             var dbPasswd = Environment.GetEnvironmentVariable("DB_PASSWORD");
             var connection = String.Format(connectionString, dbPasswd, dbName);
-            services.AddDbContext<WebAPIDbContext>(con => con.UseMySql(connection));
+            services.AddDbContext<WebAPIDbContext>(con =>
+            {
+                con.UseMySql(connection);
+            });
 
+            IPAddress[] IPs = Dns.GetHostAddressesAsync("redis").Result;
             // inject cache
-            services.AddDistributedRedisCache(options => 
+            services.AddDistributedRedisCache(options =>
             {
                 options.InstanceName = "Flight";
-                options.Configuration = "redis";
+                options.Configuration = IPs[0].ToString();
             });
 
             services.AddTransient<ITokenManager, RedisTokenManager>();
+
+            // add api doc
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Info { Title = "My API", Version = "v1" });
+            });
 
             // Add framework services.
             services.AddMvc();
@@ -68,7 +79,17 @@ namespace AviationManagement
                 app.UseExceptionHandler("/Home/Error");
             }
 
+            // Enable middleware to serve generated Swagger as a JSON endpoint.
+            app.UseSwagger();
+
+            // Enable middleware to serve swagger-ui (HTML, JS, CSS etc.), specifying the Swagger JSON endpoint.
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+            });
+
             app.UseStaticFiles();
+
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
