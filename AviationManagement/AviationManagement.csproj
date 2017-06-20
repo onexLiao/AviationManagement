@@ -9,8 +9,6 @@
     <DockerComposeProjectPath>..\docker-compose.dcproj</DockerComposeProjectPath>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Apworks" Version="0.1.100" />
-    <PackageReference Include="Apworks.Repositories.EntityFramework" Version="0.1.100" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.0.1" />
     <PackageReference Include="Microsoft.AspNetCore" Version="1.1.2" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="1.1.3" />

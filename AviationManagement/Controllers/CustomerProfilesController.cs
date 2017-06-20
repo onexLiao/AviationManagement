@@ -21,6 +21,7 @@ namespace AviationManagement.Controllers
         public CustomerProfilesController(WebAPIDbContext context, ITokenManager tokenManager)
         {
             _context = context;
+            _tokenManager = tokenManager;
         }
 
         // GET: api/CustomerProfiles/5
