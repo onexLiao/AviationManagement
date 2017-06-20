@@ -21,7 +21,7 @@ namespace AviationManagement.Controllers
             _context = context;
         }
 
-        // GET: api/Customers
+        // GET: api/CustomerProfiles
         [HttpGet]
         public IEnumerable<CustomerProfile> GetCustomers()
         {
@@ -29,7 +29,7 @@ namespace AviationManagement.Controllers
             return _context.CustomerProfiles;
         }
 
-        // GET: api/Customers/5
+        // GET: api/CustomerProfiles/5
         [HttpGet("{id}")]
         public async Task<IActionResult> GetCustomer([FromRoute] Guid id)
         {
@@ -50,7 +50,7 @@ namespace AviationManagement.Controllers
             return Ok(customer);
         }
 
-        // PUT: api/Customers/5
+        // PUT: api/CustomerProfiles/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutCustomer([FromRoute] Guid id, [FromBody] CustomerProfile customer)
         {
@@ -85,7 +85,7 @@ namespace AviationManagement.Controllers
             return NoContent();
         }
 
-        // POST: api/Customers
+        // POST: api/CustomerProfiles
         /// <summary>
         /// ´´½¨
         /// </summary>
@@ -105,7 +105,7 @@ namespace AviationManagement.Controllers
             return CreatedAtAction("GetCustomer", new { id = customer.CustomerProfileID }, customer);
         }
 
-        // DELETE: api/Customers/5
+        // DELETE: api/CustomerProfiles/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCustomer([FromRoute] Guid id)
         {

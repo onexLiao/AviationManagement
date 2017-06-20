@@ -28,7 +28,14 @@ namespace AviationManagement.Controllers
         [HttpGet]
         public IEnumerable<Flight> GetFlights()
         {
-            return _context.Flights;
+            var flights = _context.Flights.ToList();
+            flights.ForEach(f =>
+            {
+                _context.Entry(f)
+                .Collection(flight => flight.Tickets)
+                .Load();
+            });
+            return flights;
         }
 
         // GET: api/Flights/5
@@ -46,6 +53,10 @@ namespace AviationManagement.Controllers
             {
                 return NotFound();
             }
+
+            _context.Entry(flight)
+                .Collection(f => f.Tickets)
+                .Load();
 
             return Ok(flight);
         }

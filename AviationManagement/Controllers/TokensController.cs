@@ -29,11 +29,11 @@ namespace AviationManagement.Controllers
         /// forbidden verb
         /// </summary>
         /// <returns></returns>
-        [HttpGet]
-        public BadRequestObjectResult GetFlights()
-        {
-            return BadRequest("Invailed verb.");
-        }
+        //[HttpGet]
+        //public BadRequestObjectResult GetFlights()
+        //{
+        //    return BadRequest("Invailed verb.");
+        //}
 
         /// <summary>
         /// µÇÂ½²Ù×÷

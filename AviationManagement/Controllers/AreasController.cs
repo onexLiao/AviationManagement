@@ -97,6 +97,11 @@ namespace AviationManagement.Controllers
                 return BadRequest(ModelState);
             }
 
+            if (!await _tokenManager.AlthorithmCheck(new Token(userId, token)))
+            {
+                return BadRequest("Invailed role.");
+            }
+
             _context.Areas.Add(area);
             await _context.SaveChangesAsync();
 
@@ -112,6 +117,7 @@ namespace AviationManagement.Controllers
             {
                 return BadRequest(ModelState);
             }
+
             // vaildation check
             if (!await _tokenManager.AlthorithmCheck(new Token(userId, token)))
             {

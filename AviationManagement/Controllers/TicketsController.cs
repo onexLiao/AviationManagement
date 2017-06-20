@@ -133,6 +133,8 @@ namespace AviationManagement.Controllers
                 return NotFound();
             }
 
+            _context.Entry(ticket).Reference(t => t.Customer).Load();
+
             // 判断 ticket 是否属于该用户
             if (ticket.Customer.CustomerProfileID.ToString() != userId)
             {

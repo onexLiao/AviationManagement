@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Caching.Redis;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
-using System.Text;
-using System.Security.Cryptography;
-using Microsoft.EntityFrameworkCore;
+using System;
+using System.Threading.Tasks;
 
 namespace AviationManagement.Models.Manager
 {
@@ -31,8 +25,9 @@ namespace AviationManagement.Models.Manager
             String token = Guid.NewGuid().ToString().Replace("-", "");
             var model = new Token(userId, token);
             // 存储到 redis 并设置过期时间
-            await _redis.SetAsync(userId, Encoding.UTF8.GetBytes(token),
-                new DistributedCacheEntryOptions() { SlidingExpiration = new TimeSpan(1, 0, 0) });
+            var option = new DistributedCacheEntryOptions();
+            option.SetSlidingExpiration(TimeSpan.FromHours(1));
+            await _redis.SetStringAsync(userId, token, option);
             return model;
         }
         /// <summary> 创建一个 token 关联上指定用户 </summary>
@@ -52,9 +47,9 @@ namespace AviationManagement.Models.Manager
                 return false;
             }
             
-            var bytes = await _redis.GetAsync(model.TokenString);
-            string token = Encoding.UTF8.GetString(bytes);
-            if (token == null || !(token == model.TokenString))
+            var token = await _redis.GetStringAsync(model.UserId);
+
+            if (token != (model.TokenString))
             {
                 return false;
             }
